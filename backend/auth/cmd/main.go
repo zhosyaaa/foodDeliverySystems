@@ -1,10 +1,10 @@
-package cmd
+package main
 
 import (
+	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/api/server"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/config"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/db"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/pb"
-	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/services"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/utils"
 	"google.golang.org/grpc"
 	"log"
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	log.Printf("Auth Service started on : %v\n", addr)
-	s := services.Service{
+	s := server.Service{
 		DB:  db,
 		Jwt: jwt,
 	}

@@ -1,8 +1,8 @@
 package db
 
 import (
+	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/api/models"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/config"
-	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

@@ -1,9 +1,10 @@
-package services
+package server
 
 import (
 	"context"
+	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/api/models"
+	interfaces "github/zhosyaaa/foodDeliverySystems-auth-service/pkg/api/repository/interface"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/db"
-	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/models"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/pb"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/utils"
 	"net/http"
@@ -11,16 +12,16 @@ import (
 
 type Service struct {
 	pb.UnimplementedAuthServiceServer
-	DB  *db.DB
-	Jwt utils.JwtWrapper
+	DB          *db.DB
+	Jwt         utils.JwtWrapper
+	userService interfaces.UserRepository
 }
 
 var _ pb.AuthServiceServer = &Service{}
 
 func (s *Service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	var user models.User
-
-	if result := s.DB.Where(&models.User{Email: req.User.Email}).First(&user); result.Error == nil {
+	user, err := s.userService.GetUserByEmail(req.User.Email)
+	if err == nil {
 		return &pb.RegisterResponse{
 			Response: &pb.Response{
 				Status: http.StatusConflict,
@@ -41,21 +42,27 @@ func (s *Service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Re
 	}
 	user.Password = hashed
 
-	s.DB.Create(&user)
+	err = s.userService.CreateUser(user)
+	if err != nil {
+		return &pb.RegisterResponse{
+			Response: &pb.Response{
+				Error:  "Failed to prepare user data",
+				Status: http.StatusInternalServerError,
+			},
+		}, nil
+	}
 
 	return &pb.RegisterResponse{
 		Response: &pb.Response{
 			Status: http.StatusCreated,
 		},
-		User: utils.UserModelsToUserPb(&user),
+		User: utils.UserModelsToUserPb(user),
 	}, nil
 }
 
 func (s *Service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
-	var user models.User
-
-	res := s.DB.Find(&models.User{Email: req.Email}).First(&user)
-	if res.Error != nil {
+	user, err := s.userService.GetUserByEmail(req.Email)
+	if err != nil {
 		return &pb.LoginResponse{
 			Response: &pb.Response{
 				Status: http.StatusNotFound,
@@ -73,7 +80,7 @@ func (s *Service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginRes
 		}, nil
 	}
 
-	token, err := s.Jwt.GenerateToken(user)
+	token, err := s.Jwt.GenerateToken(*user)
 	if err != nil {
 		return &pb.LoginResponse{
 			Response: &pb.Response{
@@ -102,8 +109,9 @@ func (s *Service) Authenticate(ctx context.Context, req *pb.AuthenticateRequest)
 		}, nil
 	}
 
-	var user models.User
-	if result := s.DB.Where(&models.User{UserId: claims.Id}).First(&user); result.Error != nil {
+	var user *models.User
+	user, err = s.userService.GetUserByEmail(claims.Email)
+	if err != nil {
 		return &pb.AuthenticateResponse{
 			Response: &pb.Response{
 				Error:  "User not found",

@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
-	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/models"
+	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/api/models"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/models"
+	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/api/models"
 	"github/zhosyaaa/foodDeliverySystems-auth-service/pkg/pb"
 )
 
