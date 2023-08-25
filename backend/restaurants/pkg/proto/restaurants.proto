@@ -4,10 +4,15 @@ package restaurant;
 
 option go_package = "./pkg/pb";
 
+message Response {
+  string error = 1;
+  uint32 status = 2;
+}
+
 message Empty {}
 
 message MenuItem {
-  string id = 1;
+  uint64 menuItemId = 1;
   string name = 2;
   string description = 3;
   double price = 4;
@@ -24,8 +29,72 @@ message Order {
   string status = 3;
 }
 
-service RestaurantService {
-  rpc UpdateMenu(Menu) returns (Menu);
-  rpc GetMenu(Empty) returns (Menu);
-  rpc ProcessOrder(Order) returns (Order);
+message UpdateMenuItemRequest {
+  uint64 restaurantId = 1;
+  MenuItem item = 2;
+}
+
+message UpdateMenuItemResponse {
+  Response response = 1;
+}
+
+message RemoveMenuItemRequest {
+  uint64 restaurantId = 1;
+  uint64 menuItemId = 2;
+}
+
+message RemoveMenuItemResponse {
+  Response response = 1;
+}
+
+message MenuItemAvailabilityRequest {
+  uint64 restaurantId = 1;
+  uint64 menuItemId = 2;
+  bool newAvailability = 3;
+}
+
+message OrderStatusRequest {
+  string order_id = 1;
+}
+
+message OrderStatusResponse {
+  Response response = 1;
+  string status = 2;
+}
+
+// Service
+service RestaurantManagementService {
+  rpc CreateMenuItem(CreateMenuItemRequest) returns (MenuItem);
+  rpc GetMenuItemInMenu(GetMenuItemInMenuRequest) returns (MenuItem);
+  rpc GetMenuItemsInOrder(GetMenuItemsInOrderRequest) returns (Menu);
+  rpc CreateOrder(CreateOrderRequest) returns (Order);
+  rpc UpdateOrder(UpdateOrderRequest) returns (Order);
+  rpc GetOrder(Empty) returns (Order);
+  rpc UpdateMenuItem(UpdateMenuItemRequest) returns (UpdateMenuItemResponse);
+  rpc RemoveMenuItem(RemoveMenuItemRequest) returns (RemoveMenuItemResponse);
+  rpc ChangeMenuItemAvailability(MenuItemAvailabilityRequest) returns (UpdateMenuItemResponse);
+  rpc AddMenuItemInMenu(MenuItem) returns (Menu);
+  rpc RemoveMenuItemInMenu(RemoveMenuItemRequest) returns (Menu);
+}
+
+message CreateMenuItemRequest {
+  MenuItem item = 1;
+}
+
+message GetMenuItemInMenuRequest {
+  uint64 menuItemId = 1;
+}
+
+message GetMenuItemsInOrderRequest {
+  string order_id = 1;
+}
+
+message CreateOrderRequest {
+  repeated MenuItem items = 1;
+}
+
+message UpdateOrderRequest {
+  string order_id = 1;
+  repeated MenuItem items = 2;
+  string status = 3;
 }
