@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package orders;
+
+option go_package = "./internal/protos/pb";
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (Order);
+  rpc CancelOrder(CancelOrderRequest) returns (Response);
+  rpc GetUserOrders(GetUserOrdersRequest) returns (UserOrders);
+  rpc GetOrderDetails(GetOrderDetailsRequest) returns (Order);
+}
+message Response {
+  string error = 1;
+  uint32 status = 2;
+}
+
+message OrderItem {
+  uint64 dishId = 1;
+  int32 quantity = 2;
+}
+message Order {
+  uint64 id = 1;
+  string customerId = 2;
+  uint64 restaurantId = 3;
+  repeated OrderItem items = 4;
+  double totalPrice = 5;
+  string status = 6;
+  Location location = 7;
+}
+
+message Location {
+  string city = 1;
+  string postalCode = 2;
+  string address = 3;
+  string country = 4;
+}
+message CreateOrderRequest {
+  string customerId = 1;
+  uint64 restaurantId = 2;
+  repeated OrderItem items = 3;
+}
+
+message CancelOrderRequest {
+  uint64 orderId = 1;
+}
+
+message GetUserOrdersRequest {
+  string customerId = 1;
+}
+
+message UserOrders {
+  repeated Order orders = 1;
+}
+
+message GetOrderDetailsRequest {
+  uint64 orderId = 1;
+}

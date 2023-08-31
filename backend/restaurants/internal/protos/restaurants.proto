@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package restaurant;
+
+option go_package = "./internal/protos/pb";
+
+service RestaurantManagementService {
+  rpc AddDish(CreateMenuItemRequest) returns (Dish);
+  rpc UpdateDish(UpdateDishRequest) returns (UpdateDishResponse);
+  rpc DeleteDish(DeleteDishRequest) returns (DeleteDishResponse);
+  rpc GetMenu(GetMenuRequest) returns (Menu);
+  rpc GetDishDetails(GetDishDetailsRequest) returns (Dish);
+  rpc UpdateDishIngredients(UpdateDishIngredientsRequest) returns (UpdateDishResponse);
+  rpc GetDishCategories(GetDishDetailsRequest) returns (GetDishCategoriesResponse);
+  rpc ToggleDishAvailability(ToggleDishAvailabilityRequest) returns (ToggleDishAvailabilityResponse);
+  rpc UploadDishImages(UploadDishImagesRequest) returns (UploadDishImagesResponse);
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+}
+
+message Response {
+  string error = 1;
+  uint32 status = 2;
+}
+message Dish {
+  uint64 restaurantId = 1;
+  string name = 2;
+  string description = 3;
+  uint64 availability = 4;
+  double price = 5;
+  repeated string images = 6;
+  repeated string ingredients = 7;
+  repeated Category categories = 8;
+}
+
+message Category {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message Menu {
+  repeated Dish dishes= 1;
+}
+
+message OrderItem {
+  uint64 dishId = 1;
+  int32 quantity = 2;
+}
+message Order {
+  uint64 id = 1;
+  string customerId = 2;
+  uint64 restaurantId = 3;
+  repeated OrderItem items = 4;
+  double totalPrice = 5;
+  string status = 6;
+}
+message GetOrderRequest {
+  uint64 restaurantId = 1;
+  string customerId = 2;
+  Order order = 3;
+}
+message GetOrderResponse {
+  Response response = 1;
+}
+
+message UpdateOrderStatusRequest {
+  uint64 orderId = 1;
+  string newStatus = 2;
+}
+
+message UpdateOrderStatusResponse {
+  Response response = 1;
+}
+
+message CreateMenuItemRequest {
+  Dish dish = 1;
+}
+
+message UpdateDishRequest {
+  uint64 restaurantId = 1;
+  Dish dish = 2;
+}
+
+message UpdateDishResponse {
+  Response response = 1;
+}
+
+message DeleteDishRequest {
+  uint64 restaurantId = 1;
+  Dish dish = 2;
+}
+
+message DeleteDishResponse {
+  Response response = 1;
+}
+message GetMenuRequest {
+  uint64 restaurantId = 1;
+}
+message GetDishDetailsRequest {
+  uint64 restaurantId = 1;
+  uint64 dishId = 2;
+}
+message UpdateDishIngredientsRequest {
+  uint64 restaurantId = 1;
+  uint64 dishId = 2;
+  repeated string ingredients = 3;
+}
+
+message GetDishCategoriesRequest {
+  uint64 restaurantId = 1;
+  uint64 dishId = 2;
+}
+
+message GetDishCategoriesResponse {
+  repeated Category categories = 1;
+}
+
+message ToggleDishAvailabilityRequest {
+  uint64 restaurantId = 1;
+  uint64 dishId = 2;
+  uint64 availability = 3;
+}
+message ToggleDishAvailabilityResponse {
+  Response response = 1;
+}
+
+message UploadDishImagesRequest {
+  uint64 restaurantId = 1;
+  uint64 dishId = 2;
+  repeated string images = 3;
+}
+message UploadDishImagesResponse {
+  Response response = 1;
+}

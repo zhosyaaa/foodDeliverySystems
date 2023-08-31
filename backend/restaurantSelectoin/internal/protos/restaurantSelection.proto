@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package restaurant;
+
+option go_package = "./internal/protos/pb";
+
+service RestaurantSelectionService {
+  rpc GetRestaurants(GetRestaurantsRequest) returns (GetRestaurantsResponse);
+  rpc GetRestaurantDetails(GetRestaurantDetailsRequest) returns (RestaurantDetails);
+  rpc AddNewRestaurant(AddNewRestaurantRequest) returns (Response);
+  rpc UpdateRestaurantInfo(UpdateRestaurantInfoRequest) returns (Response);
+  rpc SearchRestaurants(SearchRestaurantsRequest) returns (SearchRestaurantsResponse);
+  rpc DeleteRestaurant(DeleteRestaurantRequest) returns (Response);
+}
+
+message GetRestaurantsRequest {
+}
+
+message GetRestaurantsResponse {
+  repeated Restaurant restaurants = 1;
+  Response response = 2;
+}
+
+message GetRestaurantDetailsRequest {
+  uint64 restaurantId = 1;
+}
+
+message RestaurantDetails {
+  Restaurant restaurant = 1;
+  Response response = 2;
+}
+
+message AddNewRestaurantRequest {
+  Restaurant restaurant = 1;
+}
+
+message UpdateRestaurantInfoRequest {
+  uint64 restaurantId = 1;
+  Restaurant restaurant = 2;
+}
+
+message SearchRestaurantsRequest {
+  string searchTerm = 1;
+}
+
+message SearchRestaurantsResponse {
+  repeated Restaurant restaurants = 1;
+  Response response = 2;
+}
+
+message DeleteRestaurantRequest {
+  uint64 restaurantId = 1;
+}
+
+message Restaurant {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  float Rating = 4;
+  repeated Location location = 5;
+  Menu Menu = 6;
+}
+message Location {
+  string city = 1;
+  string postalCode = 2;
+  string address = 3;
+  string country = 4;
+}
+
+message Menu {
+  repeated Dish dishes= 1;
+}
+
+message Dish {
+  uint64 restaurantId = 1;
+  string name = 2;
+  string description = 3;
+  uint64 availability = 4;
+  double price = 5;
+  repeated string images = 6;
+  repeated string ingredients = 7;
+  repeated Category categories = 8;
+}
+
+message Category {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message Response {
+  string error = 1;
+  uint32 status = 2;
+}

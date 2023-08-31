@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package restaurant;
+
+option go_package = "./internal/protos/pb";
+
+service PaymentService {
+  rpc ProcessPayment(ProcessPaymentRequest) returns (Response);
+  rpc GenerateInvoice(GenerateInvoiceRequest) returns (Response);
+  rpc GetTransactionHistory(GetTransactionHistoryRequest) returns (GetTransactionHistoryResponse);
+}
+
+message ProcessPaymentRequest {
+  double amount = 1;
+  string paymentMethod = 2;
+}
+
+message GenerateInvoiceRequest {
+  string orderId = 1;
+}
+
+message GetTransactionHistoryRequest {
+  string customerId = 1;
+}
+
+message Transaction {
+  string id = 1;
+  string userID = 2;
+  double amount = 3;
+  string type = 4;
+  string status = 5;
+}
+
+message GetTransactionHistoryResponse {
+  repeated Transaction transactions = 1;
+  Response response = 2;
+}
+
+message Response {
+  string error = 1;
+  uint32 status = 2;
+}

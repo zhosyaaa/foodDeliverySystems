@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package restaurant;
+
+option go_package = "./internal/protos/pb";
+
+service AuthService {
+  rpc RegisterUser(RegisterUserRequest) returns (Response);
+  rpc AuthenticateUser(AuthenticateUserRequest) returns (AuthenticateUserResponse);
+}
+
+message RegisterUserRequest {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string userRole = 4;
+  Location location = 5;
+}
+
+message Location {
+  string city = 1;
+  string postalCode = 2;
+  string address = 3;
+  string country = 4;
+}
+message AuthenticateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AuthenticateUserResponse {
+  Response response = 1;
+  string token = 2;
+}
+
+message Response {
+  string error = 1;
+  uint32 status = 2;
+}

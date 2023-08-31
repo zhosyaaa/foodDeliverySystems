@@ -1,5 +1,5 @@
 proto:
-	protoc ./pkg/proto/*.proto --go_out=. --go-grpc_out=.
+	protoc ./internal/protos/*.proto --go_out=. --go-grpc_out=.
 
 server:
 	export ENVIRONMENT=DEVELOPMENT;\
