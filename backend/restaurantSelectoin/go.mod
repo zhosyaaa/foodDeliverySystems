@@ -1,4 +1,4 @@
-module github.com/zhosyaaa/foodDeliverySystems-auth
+module github.com/zhosyaaa/foodDeliverySystems-restaurantSelection
 
 go 1.20
 
