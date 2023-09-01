@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"github.com/zhosyaaa/foodDeliverySystems-restaurants/internal/models"
-	interfaces "github.com/zhosyaaa/foodDeliverySystems-restaurants/internal/repositories/interfaces"
+	"github.com/zhosyaaa/foodDeliverySystems-restaurants/internal/repositories/interfaces"
 	"gorm.io/gorm"
 )
 
@@ -10,7 +10,7 @@ type RestaurantsService struct {
 	DB *gorm.DB
 }
 
-func NewOrderRepository(DB *gorm.DB) interfaces.RestaurantsRepository {
+func NewRestaurantsService(DB *gorm.DB) interfaces.RestaurantsRepository {
 	return &RestaurantsService{DB: DB}
 }
 

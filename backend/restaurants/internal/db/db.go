@@ -17,7 +17,7 @@ func InitDB(cfg *config.Config) (*DB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&models.Category{}, &models.Menu{}, &models.Dish{})
+	db.AutoMigrate(&models.Category{}, &models.Menu{}, &models.Dish{}, &models.Order{}, &models.OrderItem{}, &models.Location{})
 
 	return &DB{
 		DB: db,
