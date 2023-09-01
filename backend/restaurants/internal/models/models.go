@@ -22,3 +22,18 @@ type Menu struct {
 	ID     uint64 `gorm:"primaryKey" json:"id"`
 	Dishes []Dish `gorm:"foreignKey:RestaurantID" json:"dishes"`
 }
+type OrderItem struct {
+	ID       uint   `gorm:"primaryKey"`
+	DishID   uint64 `gorm:"column:dish_id"`
+	Quantity int32  `gorm:"column:quantity"`
+	OrderID  uint   `gorm:"index"`
+}
+
+type Order struct {
+	ID           uint   `gorm:"primaryKey"`
+	CustomerID   string `gorm:"column:customer_id"`
+	RestaurantID uint64 `gorm:"column:restaurant_id"`
+	Items        []OrderItem
+	TotalPrice   float64
+	Status       string
+}
