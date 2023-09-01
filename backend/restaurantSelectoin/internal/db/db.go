@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/zhosyaaa/foodDeliverySystems-restaurantSelection/internal/config"
+	"github.com/zhosyaaa/foodDeliverySystems-restaurantSelection/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,7 +17,7 @@ func InitDB(cfg *config.Config) (*DB, error) {
 		return nil, err
 	}
 
-	//db.AutoMigrate(&models.User{}, &models.Location{})
+	db.AutoMigrate(&models.Restaurant{}, &models.Location{}, &models.Menu{}, &models.Dish{}, &models.Category{})
 	return &DB{
 		DB: db,
 	}, nil

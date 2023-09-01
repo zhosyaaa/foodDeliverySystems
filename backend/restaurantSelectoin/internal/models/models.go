@@ -4,42 +4,42 @@ import "gorm.io/gorm"
 
 type Restaurant struct {
 	gorm.Model
-	Name        string   `gorm:"column:name" json:"name,omitempty"`
-	Description string   `gorm:"column:description" json:"description,omitempty"`
-	Rating      float32  `gorm:"column:rating" json:"rating,omitempty"`
-	Location    Location `gorm:"foreignKey:RestaurantID" json:"location,omitempty"`
-	Menu        Menu     `gorm:"foreignKey:RestaurantID" json:"menu,omitempty"`
+	Name        string     `gorm:"column:name"`
+	Description string     `gorm:"column:description"`
+	Rating      float32    `gorm:"column:rating"`
+	Locations   []Location `gorm:"many2many:restaurant_locations;"`
+	Menu        Menu
 }
 
 type Location struct {
 	gorm.Model
-	RestaurantID uint64 `gorm:"column:restaurant_id" json:"-"`
-	City         string `gorm:"column:city" json:"city,omitempty"`
-	PostalCode   string `gorm:"column:postal_code" json:"postalCode,omitempty"`
-	Address      string `gorm:"column:address" json:"address,omitempty"`
-	Country      string `gorm:"column:country" json:"country,omitempty"`
+	City        string       `gorm:"column:city"`
+	PostalCode  string       `gorm:"column:postal_code"`
+	Address     string       `gorm:"column:address"`
+	Country     string       `gorm:"column:country"`
+	Restaurants []Restaurant `gorm:"many2many:restaurant_locations;"`
 }
 
 type Menu struct {
 	gorm.Model
-	RestaurantID uint64 `gorm:"column:restaurant_id" json:"-"`
-	Dishes       []Dish `gorm:"foreignKey:RestaurantID" json:"dishes,omitempty"`
+	Dishes []Dish `gorm:"foreignKey:RestaurantID"`
 }
 
 type Dish struct {
 	gorm.Model
-	RestaurantID uint64     `gorm:"column:restaurant_id" json:"-"`
-	Name         string     `gorm:"column:name" json:"name,omitempty"`
-	Description  string     `gorm:"column:description" json:"description,omitempty"`
-	Availability uint64     `gorm:"column:availability" json:"availability,omitempty"`
-	Price        float64    `gorm:"column:price" json:"price,omitempty"`
-	Images       []string   `gorm:"column:images" json:"images,omitempty"`
-	Ingredients  []string   `gorm:"column:ingredients" json:"ingredients,omitempty"`
-	Categories   []Category `gorm:"many2many:dish_categories;" json:"categories,omitempty"`
+	RestaurantID uint64     `gorm:"column:restaurant_id"`
+	Name         string     `gorm:"column:name"`
+	Description  string     `gorm:"column:description"`
+	Availability uint64     `gorm:"column:availability"`
+	Price        float64    `gorm:"column:price"`
+	Images       []string   `gorm:"column:images"`
+	Ingredients  []string   `gorm:"column:ingredients"`
+	Categories   []Category `gorm:"many2many:dish_categories;"`
 }
 
 type Category struct {
 	gorm.Model
-	Name        string `gorm:"column:name" json:"name,omitempty"`
-	Description string `gorm:"column:description" json:"description,omitempty"`
+	Name        string `gorm:"column:name"`
+	Description string `gorm:"column:description"`
+	Dishes      []Dish `gorm:"many2many:dish_categories;"`
 }

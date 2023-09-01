@@ -1,6 +1,8 @@
 package config
 
 import (
+	"github.com/go-playground/validator/v10"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -13,26 +15,45 @@ type Config struct {
 	JwtExpirationMinute uint64 `mapstructure:"JWT_EXPIRATION_MINUTES"`
 }
 
-func LoadConfig() (*Config, error) {
-	var cfg *Config
+var envs = []string{
+	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD",
+	"TWILIO_ACCOUNT_SID", "TWILIO_AUTHTOKEN", "TWILIO_SERVICES_ID",
+}
 
-	viper.AddConfigPath(".")
+func LoadConfig() (Config, error) {
+	var config Config
+
+	viper.AddConfigPath("./")
 	if os.Getenv("ENVIRONMENT") == "DEVELOPMENT" {
 		viper.SetConfigName("dev")
 	} else {
 		viper.SetConfigName("prod")
 	}
 	viper.SetConfigType("env")
+	viper.ReadInConfig()
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		return nil, err
+	for _, env := range envs {
+		if err := viper.BindEnv(env); err != nil {
+			return config, err
+		}
 	}
 
-	err = viper.Unmarshal(&cfg)
-	if err != nil {
-		return nil, err
+	if err := viper.Unmarshal(&config); err != nil {
+		return config, err
 	}
 
-	return cfg, nil
+	if err := validator.New().Struct(&config); err != nil {
+		return config, err
+	}
+
+	return config, nil
+}
+
+func GetEnvVar(name string) string {
+	if !viper.IsSet(name) {
+		log.Debug().Msgf("Environment variable %s is not set", name)
+		return ""
+	}
+	value := viper.GetString(name)
+	return value
 }
