@@ -11,8 +11,9 @@ service PaymentService {
 }
 
 message ProcessPaymentRequest {
-  double amount = 1;
-  string paymentMethod = 2;
+  uint64 userID = 1;
+  double amount = 2;
+  string paymentMethod = 3;
 }
 
 message GenerateInvoiceRequest {
