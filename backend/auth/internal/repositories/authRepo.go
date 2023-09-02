@@ -1,4 +1,4 @@
-package repositories
+package auth
 
 import (
 	"github.com/zhosyaaa/foodDeliverySystems-auth/internal/models"

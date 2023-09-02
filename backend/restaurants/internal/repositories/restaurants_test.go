@@ -12,7 +12,7 @@ import (
 // TestRestaurantsService is a test suite for RestaurantsService methods.
 func TestRestaurantsService(t *testing.T) {
 	// Replace the following values with your PostgreSQL connection details.
-	dsn := "postgresql://username:password@localhost:5432/your_database"
+	dsn := "postgresql://postgres:1079@localhost:5432/restaurants"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to the database: %v", err)
