@@ -79,12 +79,12 @@ func (r RestaurantsService) DeleteDish(dish *models.Dish) error {
 }
 
 func (r RestaurantsService) GetMenu(restId uint64) (*models.Menu, error) {
-	restaurant := &models.Menu{}
-	if err := r.DB.Preload("Dishes").First(restaurant, restId).Error; err != nil {
+	dishes := make([]models.Dish, 0)
+	if err := r.DB.Where("restaurant_id = ?", restId).Find(&dishes).Error; err != nil {
 		return nil, err
 	}
-
-	return restaurant, nil
+	menu := models.Menu{Dishes: dishes}
+	return &menu, nil
 }
 
 func (r RestaurantsService) GetDishDetails(dishId uint64) (*models.Dish, error) {

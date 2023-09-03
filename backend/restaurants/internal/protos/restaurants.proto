@@ -41,12 +41,14 @@ message Category {
 }
 
 message Menu {
-  repeated Dish dishes= 1;
+  uint64 id = 1;
+  repeated Dish dishes= 2;
 }
 
 message OrderItem {
-  uint64 dishId = 1;
-  int32 quantity = 2;
+  uint64 ID = 1;
+  uint64 dishId = 2;
+  int32 quantity = 3;
 }
 message Order {
   uint64 id = 1;
