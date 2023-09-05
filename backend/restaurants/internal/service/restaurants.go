@@ -247,16 +247,69 @@ func (s *Service) ToggleDishAvailability(ctx context.Context, req *pb.ToggleDish
 	return response, nil
 }
 
-//func (s *Service) UploadDishImages(ctx context.Context, req *pb.UploadDishImagesRequest) (*pb.UploadDishImagesResponse, error) {
-//
-//}
-//
-//func (s *Service) GetOrder(context.Context, *GetOrderRequest) (*GetOrderResponse, error) {
-//	return nil, status.Errorf(codes.Unimplemented, "method GetOrder not implemented")
-//}
-//func (s *Service) UpdateOrderStatus(context.Context, *UpdateOrderStatusRequest) (*UpdateOrderStatusResponse, error) {
-//	return nil, status.Errorf(codes.Unimplemented, "method UpdateOrderStatus not implemented")
-//}
+func (s *Service) UploadDishImages(ctx context.Context, req *pb.UploadDishImagesRequest) (*pb.UploadDishImagesResponse, error) {
+	imageBytes := req.Images
+
+	_, err := s.repo.UploadDishImages(req.DishId, imageBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &pb.UploadDishImagesResponse{
+		Response: &pb.Response{
+			Status: 200,
+			Error:  "",
+		},
+	}
+	return response, nil
+}
+
+func (s *Service) GetOrder(ctx context.Context, req *pb.GetOrderRequest) (*pb.GetOrderResponse, error) {
+	orderID := req.Order.Id
+	orderData, err := s.repo.GetOrder(orderID)
+	if err != nil {
+		return &pb.GetOrderResponse{
+			Response: &pb.Response{
+				Status: 404,
+				Error:  "Order not found",
+			},
+			Order: nil,
+		}, err
+	}
+	pbOrder := &pb.Order{
+		Id:           orderData.ID,
+		CustomerId:   orderData.CustomerID,
+		RestaurantId: orderData.RestaurantID,
+		Items:        convertOrderItemsToProto(orderData.Items),
+		TotalPrice:   orderData.TotalPrice,
+		Status:       orderData.Status,
+	}
+
+	response := &pb.GetOrderResponse{
+		Response: &pb.Response{
+			Status: 200,
+			Error:  "",
+		},
+		Order: pbOrder,
+	}
+	return response, nil
+}
+func (s *Service) UpdateOrderStatus(ctx context.Context, req *pb.UpdateOrderStatusRequest) (*pb.UpdateOrderStatusResponse, error) {
+	orderID := req.OrderId
+	newStatus := req.NewStatus
+
+	if _, err := s.repo.UpdateOrderStatus(orderID, newStatus); err != nil {
+		return nil, err
+	}
+
+	response := &pb.UpdateOrderStatusResponse{
+		Response: &pb.Response{
+			Status: 200,
+			Error:  "",
+		},
+	}
+	return response, nil
+}
 
 func ConvertModelsCategoriesToPb(categories []*models.Category) []*pb.Category {
 	pbCategories := make([]*pb.Category, len(categories))
@@ -269,4 +322,18 @@ func ConvertModelsCategoriesToPb(categories []*models.Category) []*pb.Category {
 		pbCategories[i] = pbCategory
 	}
 	return pbCategories
+}
+
+func convertOrderItemsToProto(orderItems []models.OrderItem) []*pb.OrderItem {
+	pbOrderItems := make([]*pb.OrderItem, len(orderItems))
+	for i, item := range orderItems {
+		pbItem := &pb.OrderItem{
+			ID:       uint64(item.ID),
+			DishId:   item.DishID,
+			OrderID:  uint64(item.OrderID),
+			Quantity: item.Quantity,
+		}
+		pbOrderItems[i] = pbItem
+	}
+	return pbOrderItems
 }

@@ -49,10 +49,11 @@ message OrderItem {
   uint64 ID = 1;
   uint64 dishId = 2;
   int32 quantity = 3;
+  uint64 orderID = 4;
 }
 message Order {
   uint64 id = 1;
-  string customerId = 2;
+  uint64 customerId = 2;
   uint64 restaurantId = 3;
   repeated OrderItem items = 4;
   double totalPrice = 5;
@@ -65,6 +66,7 @@ message GetOrderRequest {
 }
 message GetOrderResponse {
   Response response = 1;
+  Order order = 2;
 }
 
 message UpdateOrderStatusRequest {
@@ -117,6 +119,7 @@ message GetDishCategoriesRequest {
 
 message GetDishCategoriesResponse {
   repeated Category categories = 1;
+  Response response = 2;
 }
 
 message ToggleDishAvailabilityRequest {
