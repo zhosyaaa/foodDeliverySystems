@@ -5,10 +5,10 @@ package orders;
 option go_package = "./internal/protos/pb";
 
 service OrderService {
-  rpc CreateOrder(CreateOrderRequest) returns (Order);
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
   rpc CancelOrder(CancelOrderRequest) returns (Response);
-  rpc GetUserOrders(GetUserOrdersRequest) returns (UserOrders);
-  rpc GetOrderDetails(GetOrderDetailsRequest) returns (Order);
+  rpc GetUserOrders(GetUserOrdersRequest) returns (GetUserOrdersResponse);
+  rpc GetOrderDetails(GetOrderDetailsRequest) returns (GetOrderDetailsResponse);
 }
 message Response {
   string error = 1;
@@ -16,8 +16,10 @@ message Response {
 }
 
 message OrderItem {
-  uint64 dishId = 1;
-  int32 quantity = 2;
+  uint64 ID = 1;
+  uint64 dishID = 2;
+  int32 quantity = 3;
+  uint64 orderID = 4;
 }
 message Order {
   uint64 id = 1;
@@ -26,14 +28,18 @@ message Order {
   repeated OrderItem items = 4;
   double totalPrice = 5;
   string status = 6;
-  Location location = 7;
 }
-
-message Location {
-  string city = 1;
-  string postalCode = 2;
-  string address = 3;
-  string country = 4;
+message CreateOrderResponse{
+  Response response = 1;
+  Order order = 2;
+}
+message GetUserOrdersResponse {
+  Response response = 1;
+  UserOrders userOrders = 2;
+}
+message GetOrderDetailsResponse {
+  Response response = 1;
+  Order order = 2;
 }
 message CreateOrderRequest {
   string customerId = 1;
@@ -46,7 +52,7 @@ message CancelOrderRequest {
 }
 
 message GetUserOrdersRequest {
-  string customerId = 1;
+  uint64 customerId = 1;
 }
 
 message UserOrders {
@@ -55,4 +61,32 @@ message UserOrders {
 
 message GetOrderDetailsRequest {
   uint64 orderId = 1;
+}
+
+service DishService{
+  rpc GetDishById (GetDishByIdRequest) returns (GetDishByIdResponse);
+}
+message GetDishByIdRequest {
+  uint64 dishID = 1;
+}
+message GetDishByIdResponse{
+  Response response = 1;
+  Dish dish = 2;
+}
+message Dish {
+  uint64 ID = 1;
+  uint64 restaurantId = 2;
+  string name = 3;
+  string description = 4;
+  uint64 availability = 5;
+  double price = 6;
+  repeated string images = 7;
+  repeated string ingredients = 8;
+  repeated Category categories = 9;
+}
+
+message Category {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
 }

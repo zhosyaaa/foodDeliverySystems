@@ -20,8 +20,6 @@ type Order struct {
 	CustomerID   string `gorm:"column:customer_id"`
 	RestaurantID uint64 `gorm:"column:restaurant_id"`
 	Items        []OrderItem
-	TotalPrice   float64  `gorm:"column:total_price"`
-	Status       string   `gorm:"column:status"`
-	Location     Location `gorm:"foreignKey:LocationID"`
-	LocationID   uint     `gorm:"column:location_id"`
+	TotalPrice   float64 `gorm:"column:total_price"`
+	Status       string  `gorm:"column:status"`
 }

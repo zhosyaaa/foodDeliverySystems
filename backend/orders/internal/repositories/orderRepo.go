@@ -6,15 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type orderService struct {
+type OrderService struct {
 	DB *gorm.DB
 }
 
 func newOrderService(DB *gorm.DB) interfaces.OrderRepository {
-	return &orderService{DB: DB}
+	return &OrderService{DB: DB}
 }
 
-func (o orderService) CreateOrder(order *models.Order) error {
+func (o OrderService) CreateOrder(order *models.Order) error {
 	if err := o.DB.Create(order).Error; err != nil {
 		return err
 	}
@@ -22,14 +22,14 @@ func (o orderService) CreateOrder(order *models.Order) error {
 	return nil
 }
 
-func (o orderService) CancelOrder(order *models.Order) error {
+func (o OrderService) CancelOrder(order *models.Order) error {
 	if err := o.DB.Model(order).Update("Status", "Canceled").Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o orderService) GetUserOrders(userId uint64) ([]models.Order, error) {
+func (o OrderService) GetUserOrders(userId uint64) ([]models.Order, error) {
 	var orders []models.Order
 	if err := o.DB.Where("customer_id = ?", userId).Find(&orders).Error; err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (o orderService) GetUserOrders(userId uint64) ([]models.Order, error) {
 	return orders, nil
 }
 
-func (o orderService) GetOrderDetails(orderId uint64) (*models.Order, error) {
+func (o OrderService) GetOrderDetails(orderId uint64) (*models.Order, error) {
 	order := &models.Order{}
 	if err := o.DB.Preload("Items").First(order, orderId).Error; err != nil {
 		return nil, err

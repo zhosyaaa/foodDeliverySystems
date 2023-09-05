@@ -18,7 +18,6 @@ func TestRestaurantsService(t *testing.T) {
 		t.Fatalf("Error connecting to the database: %v", err)
 	}
 
-	// Initialize the service with the database connection.
 	service := NewRestaurantsService(db)
 
 	// Test AddDish method.
@@ -32,7 +31,6 @@ func TestRestaurantsService(t *testing.T) {
 
 		err := service.AddDish(dish)
 		assert.NoError(t, err)
-
 		// Verify that the dish has been added to the database.
 		var fetchedDish models.Dish
 		db.First(&fetchedDish, dish.ID)
