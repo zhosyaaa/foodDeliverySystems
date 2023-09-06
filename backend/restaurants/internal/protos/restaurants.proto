@@ -5,11 +5,11 @@ package restaurant;
 option go_package = "./internal/protos/pb";
 
 service RestaurantManagementService {
-  rpc AddDish(CreateMenuItemRequest) returns (Dish);
+  rpc AddDish(CreateMenuItemRequest) returns (AddDishResponse);
   rpc UpdateDish(UpdateDishRequest) returns (UpdateDishResponse);
   rpc DeleteDish(DeleteDishRequest) returns (DeleteDishResponse);
-  rpc GetMenu(GetMenuRequest) returns (Menu);
-  rpc GetDishDetails(GetDishDetailsRequest) returns (Dish);
+  rpc GetMenu(GetMenuRequest) returns (GetMenuResponse);
+  rpc GetDishDetails(GetDishDetailsRequest) returns (GetDishDetailsResponse);
   rpc UpdateDishIngredients(UpdateDishIngredientsRequest) returns (UpdateDishResponse);
   rpc GetDishCategories(GetDishDetailsRequest) returns (GetDishCategoriesResponse);
   rpc ToggleDishAvailability(ToggleDishAvailabilityRequest) returns (ToggleDishAvailabilityResponse);
@@ -45,6 +45,16 @@ message Menu {
   repeated Dish dishes= 2;
 }
 
+message GetMenuResponse {
+  Response response = 1;
+  Menu menu = 2;
+}
+message GetDishDetailsResponse {
+  Response response = 1;
+  Dish dish = 2;
+}
+
+
 message OrderItem {
   uint64 ID = 1;
   uint64 dishId = 2;
@@ -68,6 +78,10 @@ message GetOrderResponse {
   Response response = 1;
   Order order = 2;
 }
+message AddDishResponse {
+  Response response = 1;
+  Dish dish = 2;
+}
 
 message UpdateOrderStatusRequest {
   uint64 orderId = 1;
@@ -81,6 +95,7 @@ message UpdateOrderStatusResponse {
 message CreateMenuItemRequest {
   Dish dish = 1;
 }
+
 
 message UpdateDishRequest {
   uint64 restaurantId = 1;

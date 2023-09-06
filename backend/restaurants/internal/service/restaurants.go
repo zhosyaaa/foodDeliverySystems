@@ -12,7 +12,7 @@ type Service struct {
 	repo repositories.RestaurantsService
 }
 
-func (s *Service) AddDish(ctx context.Context, req *pb.CreateMenuItemRequest) (*pb.Dish, error) {
+func (s *Service) AddDish(ctx context.Context, req *pb.CreateMenuItemRequest) (*pb.AddDishResponse, error) {
 	dish := &models.Dish{
 		RestaurantID: req.Dish.RestaurantId,
 		Name:         req.Dish.Name,
@@ -24,7 +24,13 @@ func (s *Service) AddDish(ctx context.Context, req *pb.CreateMenuItemRequest) (*
 		Categories:   ConvertPbCategoriesToModels(req.Dish.Categories),
 	}
 	if err := s.repo.AddDish(dish); err != nil {
-		return nil, err
+		return &pb.AddDishResponse{
+			Response: &pb.Response{
+				Status: 500,
+				Error:  "error when creating an dish",
+			},
+			Dish: nil,
+		}, err
 	}
 
 	pbDish := &pb.Dish{
@@ -38,7 +44,13 @@ func (s *Service) AddDish(ctx context.Context, req *pb.CreateMenuItemRequest) (*
 		Ingredients:  dish.Ingredients,
 		Categories:   ConvertModelsCategoriesToPb(dish.Categories),
 	}
-	return pbDish, nil
+	return &pb.AddDishResponse{
+		Response: &pb.Response{
+			Status: 200,
+			Error:  "",
+		},
+		Dish: pbDish,
+	}, nil
 }
 
 func (s *Service) UpdateDish(ctx context.Context, req *pb.UpdateDishRequest) (*pb.UpdateDishResponse, error) {
@@ -119,10 +131,16 @@ func (s *Service) DeleteDish(ctx context.Context, req *pb.DeleteDishRequest) (*p
 	}, nil
 }
 
-func (s *Service) GetMenu(ctx context.Context, req *pb.GetMenuRequest) (*pb.Menu, error) {
+func (s *Service) GetMenu(ctx context.Context, req *pb.GetMenuRequest) (*pb.GetMenuResponse, error) {
 	menu, err := s.repo.GetMenu(req.RestaurantId)
 	if err != nil {
-		return nil, err
+		return &pb.GetMenuResponse{
+			Response: &pb.Response{
+				Status: 404,
+				Error:  "Menu not found",
+			},
+			Menu: nil,
+		}, err
 	}
 
 	rDish := make([]*pb.Dish, 0, len(menu.Dishes))
@@ -144,28 +162,27 @@ func (s *Service) GetMenu(ctx context.Context, req *pb.GetMenuRequest) (*pb.Menu
 	menuResponse := &pb.Menu{
 		Dishes: rDish,
 	}
-	return menuResponse, nil
+	return &pb.GetMenuResponse{
+		Response: &pb.Response{
+			Status: 200,
+			Error:  "",
+		},
+		Menu: menuResponse,
+	}, nil
 }
 
-func ConvertPbCategoriesToModels(pbCategories []*pb.Category) []*models.Category {
-	var modelsCategories []*models.Category
-	for _, pbCategory := range pbCategories {
-		modelsCategory := &models.Category{
-			ID:          pbCategory.Id,
-			Name:        pbCategory.Name,
-			Description: pbCategory.Description,
-		}
-		modelsCategories = append(modelsCategories, modelsCategory)
-	}
-	return modelsCategories
-}
-
-func (s *Service) GetDishDetails(ctx context.Context, req *pb.GetDishDetailsRequest) (*pb.Dish, error) {
+func (s *Service) GetDishDetails(ctx context.Context, req *pb.GetDishDetailsRequest) (*pb.GetDishDetailsResponse, error) {
 	dishID := req.DishId
 
 	dish, err := s.repo.GetDishDetails(dishID)
 	if err != nil {
-		return nil, err
+		return &pb.GetDishDetailsResponse{
+			Response: &pb.Response{
+				Status: 404,
+				Error:  "Dish not found",
+			},
+			Dish: nil,
+		}, err
 	}
 	pbDish := &pb.Dish{
 		ID:           dish.ID,
@@ -178,7 +195,13 @@ func (s *Service) GetDishDetails(ctx context.Context, req *pb.GetDishDetailsRequ
 		Ingredients:  dish.Ingredients,
 		Categories:   ConvertModelsCategoriesToPb(dish.Categories),
 	}
-	return pbDish, nil
+	return &pb.GetDishDetailsResponse{
+		Response: &pb.Response{
+			Status: 200,
+			Error:  "",
+		},
+		Dish: pbDish,
+	}, nil
 }
 
 func (s *Service) UpdateDishIngredients(ctx context.Context, req *pb.UpdateDishIngredientsRequest) (*pb.UpdateDishResponse, error) {
@@ -216,26 +239,45 @@ func (s *Service) GetDishCategories(ctx context.Context, req *pb.GetDishDetailsR
 	dishID := req.DishId
 	dish, err := s.repo.GetDishDetails(dishID)
 	if err != nil {
-		return nil, err
+		return &pb.GetDishCategoriesResponse{
+			Response: &pb.Response{
+				Status: 404,
+				Error:  "Dish not found",
+			},
+			Categories: nil,
+		}, err
 	}
 	categories := ConvertModelsCategoriesToPb(dish.Categories)
-	response := &pb.GetDishCategoriesResponse{
-		Categories: categories,
-	}
 
-	return response, nil
+	return &pb.GetDishCategoriesResponse{
+		Response: &pb.Response{
+			Status: 404,
+			Error:  "Dish not found",
+		},
+		Categories: categories,
+	}, nil
 }
 
 func (s *Service) ToggleDishAvailability(ctx context.Context, req *pb.ToggleDishAvailabilityRequest) (*pb.ToggleDishAvailabilityResponse, error) {
 	dishID := req.DishId
 	dish, err := s.repo.GetDishDetails(dishID)
 	if err != nil {
-		return nil, err
+		return &pb.ToggleDishAvailabilityResponse{
+			Response: &pb.Response{
+				Status: 404,
+				Error:  "Dish not found",
+			},
+		}, err
 	}
 	dish.Availability = dish.Availability
 
 	if err := s.repo.UpdateDish(dish); err != nil {
-		return nil, err
+		return &pb.ToggleDishAvailabilityResponse{
+			Response: &pb.Response{
+				Status: 500,
+				Error:  "error in updating the dish",
+			},
+		}, err
 	}
 
 	response := &pb.ToggleDishAvailabilityResponse{
@@ -252,7 +294,12 @@ func (s *Service) UploadDishImages(ctx context.Context, req *pb.UploadDishImages
 
 	_, err := s.repo.UploadDishImages(req.DishId, imageBytes)
 	if err != nil {
-		return nil, err
+		return &pb.UploadDishImagesResponse{
+			Response: &pb.Response{
+				Status: 500,
+				Error:  "error in updating the dish",
+			},
+		}, err
 	}
 
 	response := &pb.UploadDishImagesResponse{
@@ -294,6 +341,7 @@ func (s *Service) GetOrder(ctx context.Context, req *pb.GetOrderRequest) (*pb.Ge
 	}
 	return response, nil
 }
+
 func (s *Service) UpdateOrderStatus(ctx context.Context, req *pb.UpdateOrderStatusRequest) (*pb.UpdateOrderStatusResponse, error) {
 	orderID := req.OrderId
 	newStatus := req.NewStatus
@@ -310,7 +358,6 @@ func (s *Service) UpdateOrderStatus(ctx context.Context, req *pb.UpdateOrderStat
 	}
 	return response, nil
 }
-
 func ConvertModelsCategoriesToPb(categories []*models.Category) []*pb.Category {
 	pbCategories := make([]*pb.Category, len(categories))
 	for i, category := range categories {
@@ -336,4 +383,17 @@ func convertOrderItemsToProto(orderItems []models.OrderItem) []*pb.OrderItem {
 		pbOrderItems[i] = pbItem
 	}
 	return pbOrderItems
+}
+
+func ConvertPbCategoriesToModels(pbCategories []*pb.Category) []*models.Category {
+	var modelsCategories []*models.Category
+	for _, pbCategory := range pbCategories {
+		modelsCategory := &models.Category{
+			ID:          pbCategory.Id,
+			Name:        pbCategory.Name,
+			Description: pbCategory.Description,
+		}
+		modelsCategories = append(modelsCategories, modelsCategory)
+	}
+	return modelsCategories
 }

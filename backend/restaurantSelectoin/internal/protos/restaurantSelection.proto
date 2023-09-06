@@ -67,9 +67,17 @@ message Location {
   string country = 4;
 }
 
+
+//service RestaurantsService {
+//  rpc GetMenu() returns ();
+//  rpc
+//}
+
+
 message Menu {
   repeated Dish dishes= 1;
 }
+
 
 message Dish {
   uint64 restaurantId = 1;

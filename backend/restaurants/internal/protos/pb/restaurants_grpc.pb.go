@@ -22,11 +22,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RestaurantManagementServiceClient interface {
-	AddDish(ctx context.Context, in *CreateMenuItemRequest, opts ...grpc.CallOption) (*Dish, error)
+	AddDish(ctx context.Context, in *CreateMenuItemRequest, opts ...grpc.CallOption) (*AddDishResponse, error)
 	UpdateDish(ctx context.Context, in *UpdateDishRequest, opts ...grpc.CallOption) (*UpdateDishResponse, error)
 	DeleteDish(ctx context.Context, in *DeleteDishRequest, opts ...grpc.CallOption) (*DeleteDishResponse, error)
-	GetMenu(ctx context.Context, in *GetMenuRequest, opts ...grpc.CallOption) (*Menu, error)
-	GetDishDetails(ctx context.Context, in *GetDishDetailsRequest, opts ...grpc.CallOption) (*Dish, error)
+	GetMenu(ctx context.Context, in *GetMenuRequest, opts ...grpc.CallOption) (*GetMenuResponse, error)
+	GetDishDetails(ctx context.Context, in *GetDishDetailsRequest, opts ...grpc.CallOption) (*GetDishDetailsResponse, error)
 	UpdateDishIngredients(ctx context.Context, in *UpdateDishIngredientsRequest, opts ...grpc.CallOption) (*UpdateDishResponse, error)
 	GetDishCategories(ctx context.Context, in *GetDishDetailsRequest, opts ...grpc.CallOption) (*GetDishCategoriesResponse, error)
 	ToggleDishAvailability(ctx context.Context, in *ToggleDishAvailabilityRequest, opts ...grpc.CallOption) (*ToggleDishAvailabilityResponse, error)
@@ -43,8 +43,8 @@ func NewRestaurantManagementServiceClient(cc grpc.ClientConnInterface) Restauran
 	return &restaurantManagementServiceClient{cc}
 }
 
-func (c *restaurantManagementServiceClient) AddDish(ctx context.Context, in *CreateMenuItemRequest, opts ...grpc.CallOption) (*Dish, error) {
-	out := new(Dish)
+func (c *restaurantManagementServiceClient) AddDish(ctx context.Context, in *CreateMenuItemRequest, opts ...grpc.CallOption) (*AddDishResponse, error) {
+	out := new(AddDishResponse)
 	err := c.cc.Invoke(ctx, "/restaurant.RestaurantManagementService/AddDish", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,8 +70,8 @@ func (c *restaurantManagementServiceClient) DeleteDish(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *restaurantManagementServiceClient) GetMenu(ctx context.Context, in *GetMenuRequest, opts ...grpc.CallOption) (*Menu, error) {
-	out := new(Menu)
+func (c *restaurantManagementServiceClient) GetMenu(ctx context.Context, in *GetMenuRequest, opts ...grpc.CallOption) (*GetMenuResponse, error) {
+	out := new(GetMenuResponse)
 	err := c.cc.Invoke(ctx, "/restaurant.RestaurantManagementService/GetMenu", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -79,8 +79,8 @@ func (c *restaurantManagementServiceClient) GetMenu(ctx context.Context, in *Get
 	return out, nil
 }
 
-func (c *restaurantManagementServiceClient) GetDishDetails(ctx context.Context, in *GetDishDetailsRequest, opts ...grpc.CallOption) (*Dish, error) {
-	out := new(Dish)
+func (c *restaurantManagementServiceClient) GetDishDetails(ctx context.Context, in *GetDishDetailsRequest, opts ...grpc.CallOption) (*GetDishDetailsResponse, error) {
+	out := new(GetDishDetailsResponse)
 	err := c.cc.Invoke(ctx, "/restaurant.RestaurantManagementService/GetDishDetails", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -146,11 +146,11 @@ func (c *restaurantManagementServiceClient) UpdateOrderStatus(ctx context.Contex
 // All implementations must embed UnimplementedRestaurantManagementServiceServer
 // for forward compatibility
 type RestaurantManagementServiceServer interface {
-	AddDish(context.Context, *CreateMenuItemRequest) (*Dish, error)
+	AddDish(context.Context, *CreateMenuItemRequest) (*AddDishResponse, error)
 	UpdateDish(context.Context, *UpdateDishRequest) (*UpdateDishResponse, error)
 	DeleteDish(context.Context, *DeleteDishRequest) (*DeleteDishResponse, error)
-	GetMenu(context.Context, *GetMenuRequest) (*Menu, error)
-	GetDishDetails(context.Context, *GetDishDetailsRequest) (*Dish, error)
+	GetMenu(context.Context, *GetMenuRequest) (*GetMenuResponse, error)
+	GetDishDetails(context.Context, *GetDishDetailsRequest) (*GetDishDetailsResponse, error)
 	UpdateDishIngredients(context.Context, *UpdateDishIngredientsRequest) (*UpdateDishResponse, error)
 	GetDishCategories(context.Context, *GetDishDetailsRequest) (*GetDishCategoriesResponse, error)
 	ToggleDishAvailability(context.Context, *ToggleDishAvailabilityRequest) (*ToggleDishAvailabilityResponse, error)
@@ -164,7 +164,7 @@ type RestaurantManagementServiceServer interface {
 type UnimplementedRestaurantManagementServiceServer struct {
 }
 
-func (UnimplementedRestaurantManagementServiceServer) AddDish(context.Context, *CreateMenuItemRequest) (*Dish, error) {
+func (UnimplementedRestaurantManagementServiceServer) AddDish(context.Context, *CreateMenuItemRequest) (*AddDishResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddDish not implemented")
 }
 func (UnimplementedRestaurantManagementServiceServer) UpdateDish(context.Context, *UpdateDishRequest) (*UpdateDishResponse, error) {
@@ -173,10 +173,10 @@ func (UnimplementedRestaurantManagementServiceServer) UpdateDish(context.Context
 func (UnimplementedRestaurantManagementServiceServer) DeleteDish(context.Context, *DeleteDishRequest) (*DeleteDishResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDish not implemented")
 }
-func (UnimplementedRestaurantManagementServiceServer) GetMenu(context.Context, *GetMenuRequest) (*Menu, error) {
+func (UnimplementedRestaurantManagementServiceServer) GetMenu(context.Context, *GetMenuRequest) (*GetMenuResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMenu not implemented")
 }
-func (UnimplementedRestaurantManagementServiceServer) GetDishDetails(context.Context, *GetDishDetailsRequest) (*Dish, error) {
+func (UnimplementedRestaurantManagementServiceServer) GetDishDetails(context.Context, *GetDishDetailsRequest) (*GetDishDetailsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDishDetails not implemented")
 }
 func (UnimplementedRestaurantManagementServiceServer) UpdateDishIngredients(context.Context, *UpdateDishIngredientsRequest) (*UpdateDishResponse, error) {
