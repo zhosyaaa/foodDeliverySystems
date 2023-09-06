@@ -6,11 +6,11 @@ option go_package = "./internal/protos/pb";
 
 service RestaurantSelectionService {
   rpc GetRestaurants(GetRestaurantsRequest) returns (GetRestaurantsResponse);
-  rpc GetRestaurantDetails(GetRestaurantDetailsRequest) returns (RestaurantDetails);
-  rpc AddNewRestaurant(AddNewRestaurantRequest) returns (Response);
-  rpc UpdateRestaurantInfo(UpdateRestaurantInfoRequest) returns (Response);
+  rpc GetRestaurantDetails(GetRestaurantDetailsRequest) returns (RestaurantDetailsResponse);
+  rpc AddNewRestaurant(AddNewRestaurantRequest) returns (AddNewRestaurantResponse);
+  rpc UpdateRestaurantInfo(UpdateRestaurantInfoRequest) returns (UpdateRestaurantInfoResponse);
   rpc SearchRestaurants(SearchRestaurantsRequest) returns (SearchRestaurantsResponse);
-  rpc DeleteRestaurant(DeleteRestaurantRequest) returns (Response);
+  rpc DeleteRestaurant(DeleteRestaurantRequest) returns (DeleteRestaurantResponse);
 }
 
 message GetRestaurantsRequest {
@@ -20,14 +20,23 @@ message GetRestaurantsResponse {
   repeated Restaurant restaurants = 1;
   Response response = 2;
 }
+message DeleteRestaurantResponse {
+  Response response = 1;
+}
 
+message UpdateRestaurantInfoResponse {
+  Response response = 1;
+}
 message GetRestaurantDetailsRequest {
   uint64 restaurantId = 1;
 }
+message AddNewRestaurantResponse {
+  Response response = 1;
+}
 
-message RestaurantDetails {
-  Restaurant restaurant = 1;
-  Response response = 2;
+message RestaurantDetailsResponse {
+  Response response = 1;
+  Restaurant restaurant = 2;
 }
 
 message AddNewRestaurantRequest {
@@ -44,8 +53,8 @@ message SearchRestaurantsRequest {
 }
 
 message SearchRestaurantsResponse {
-  repeated Restaurant restaurants = 1;
-  Response response = 2;
+  Response response = 1;
+  repeated Restaurant restaurants = 2;
 }
 
 message DeleteRestaurantRequest {
@@ -68,17 +77,20 @@ message Location {
 }
 
 
-//service RestaurantsService {
-//  rpc GetMenu() returns ();
-//  rpc
-//}
+service RestaurantsService {
+  rpc GetMenu(GetMenuRequest) returns (GetMenuResponse);
+}
 
-
+message GetMenuResponse {
+  Response response = 1;
+  Menu menu = 2;
+}
+message GetMenuRequest {
+  uint64 restID = 1;
+}
 message Menu {
   repeated Dish dishes= 1;
 }
-
-
 message Dish {
   uint64 restaurantId = 1;
   string name = 2;
