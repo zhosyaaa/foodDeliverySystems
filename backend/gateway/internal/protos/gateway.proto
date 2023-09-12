@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service RestaurantManagementService {
+  rpc AddDish(CreateMenuItemRequest) returns (AddDishResponse);
+  rpc UpdateDish(UpdateDishRequest) returns (UpdateDishResponse);
+  rpc DeleteDish(DeleteDishRequest) returns (DeleteDishResponse);
+  rpc GetMenu(GetMenuRequest) returns (GetMenuResponse);
+  rpc GetDishDetails(GetDishDetailsRequest) returns (GetDishDetailsResponse);
+  rpc UpdateDishIngredients(UpdateDishIngredientsRequest) returns (UpdateDishResponse);
+  rpc GetDishCategories(GetDishDetailsRequest) returns (GetDishCategoriesResponse);
+  rpc ToggleDishAvailability(ToggleDishAvailabilityRequest) returns (ToggleDishAvailabilityResponse);
+  rpc UploadDishImages(UploadDishImagesRequest) returns (UploadDishImagesResponse);
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+}
