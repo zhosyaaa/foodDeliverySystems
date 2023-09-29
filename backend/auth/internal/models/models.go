@@ -13,8 +13,6 @@ type User struct {
 
 type Location struct {
 	gorm.Model
-	City       string `gorm:"column:city" json:"city,omitempty"`
-	PostalCode string `gorm:"column:postalCode" json:"postalCode,omitempty"`
-	Address    string `gorm:"column:address" json:"address,omitempty"`
-	Country    string `gorm:"column:country" json:"country,omitempty"`
+	Longitude float64 `json:"longitude"`
+	Latitude  float64 `json:"latitude"`
 }

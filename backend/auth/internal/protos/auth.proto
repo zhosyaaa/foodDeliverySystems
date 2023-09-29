@@ -5,8 +5,23 @@ package restaurant;
 option go_package = "./internal/protos/pb";
 
 service AuthService {
-  rpc RegisterUser(RegisterUserRequest) returns (Response);
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
   rpc AuthenticateUser(AuthenticateUserRequest) returns (AuthenticateUserResponse);
+}
+message RegisterUserResponse {
+  Response response = 1;
+  string refreshToken = 2;
+  string accessToken = 3;
+}
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+message LoginResponse {
+    Response response = 1;
+    string refreshToken = 2;
+    string accessToken = 3;
 }
 
 message RegisterUserRequest {
@@ -18,11 +33,10 @@ message RegisterUserRequest {
 }
 
 message Location {
-  string city = 1;
-  string postalCode = 2;
-  string address = 3;
-  string country = 4;
+  float Latitude = 1;
+  float Longitude = 2;
 }
+
 message AuthenticateUserRequest {
   string username = 1;
   string password = 2;

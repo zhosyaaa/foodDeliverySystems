@@ -1,16 +1,16 @@
-package auth
+package auth_test
 
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/zhosyaaa/foodDeliverySystems-auth/internal/models"
+	auth "github.com/zhosyaaa/foodDeliverySystems-auth/internal/repositories"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"testing"
 )
 
 func setupTestDB(t *testing.T) *gorm.DB {
-	dsn := "postgresql://postgres:1079localhost:8080/auth"
+	dsn := "user=yourusername password=yourpassword dbname=test_auth sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to the database: %v", err)
@@ -22,46 +22,66 @@ func clearTestDB(db *gorm.DB) {
 	db.Exec("DELETE FROM users")
 }
 
-func TestAuthService_RegisterUser(t *testing.T) {
+func TestAuthService_CreateUser(t *testing.T) {
 	db := setupTestDB(t)
 	clearTestDB(db)
 
-	authService := NewAuthService(db)
+	authService := auth.NewAuthService(db)
 
-	username := "testuser"
-	password := "testpassword"
+	testUser := models.User{
+		Username: "testuser",
+		Password: "testpassword",
+		Email:    "test@example.com",
+	}
 
-	err := authService.RegisterUser(username, password)
+	createdUser, err := authService.CreateUser(testUser)
 	assert.NoError(t, err)
+	assert.NotEmpty(t, createdUser.ID)
 
-	var user models.User
-	result := db.Clauses(clause.Locking{Strength: "UPDATE"}).First(&user, "username = ?", username)
-	assert.NoError(t, result.Error)
-	assert.Equal(t, username, user.Username)
-	assert.Equal(t, password, user.Password)
+	// Проверьте, что пользователь сохранен в базе данных
+	var retrievedUser models.User
+	db.First(&retrievedUser, createdUser.ID)
+	assert.Equal(t, testUser.Username, retrievedUser.Username)
+	assert.Equal(t, testUser.Password, retrievedUser.Password)
+	assert.Equal(t, testUser.Email, retrievedUser.Email)
 }
 
-func TestAuthService_AuthenticateUser(t *testing.T) {
+func TestAuthService_GetUserById(t *testing.T) {
 	db := setupTestDB(t)
 	clearTestDB(db)
 
-	authService := NewAuthService(db)
+	authService := auth.NewAuthService(db)
 
-	username := "testuser"
-	password := "testpassword"
+	testUser := models.User{
+		Username: "testuser",
+		Password: "testpassword",
+		Email:    "test@example.com",
+	}
+	db.Create(&testUser)
 
-	err := authService.RegisterUser(username, password)
+	retrievedUser, err := authService.GetUserById(int(testUser.ID))
 	assert.NoError(t, err)
+	assert.Equal(t, testUser.Username, retrievedUser.Username)
+	assert.Equal(t, testUser.Password, retrievedUser.Password)
+	assert.Equal(t, testUser.Email, retrievedUser.Email)
+}
 
-	authenticated, err := authService.AuthenticateUser(username, password)
-	assert.NoError(t, err)
-	assert.True(t, authenticated)
+func TestAuthService_GetUserByEmail(t *testing.T) {
+	db := setupTestDB(t)
+	clearTestDB(db)
 
-	authenticated, err = authService.AuthenticateUser(username, "wrongpassword")
-	assert.NoError(t, err)
-	assert.False(t, authenticated)
+	authService := auth.NewAuthService(db)
 
-	authenticated, err = authService.AuthenticateUser("nonexistentuser", "password")
+	testUser := models.User{
+		Username: "testuser",
+		Password: "testpassword",
+		Email:    "test@example.com",
+	}
+	db.Create(&testUser)
+
+	retrievedUser, err := authService.GetUserByEmail(testUser.Email)
 	assert.NoError(t, err)
-	assert.False(t, authenticated)
+	assert.Equal(t, testUser.Username, retrievedUser.Username)
+	assert.Equal(t, testUser.Password, retrievedUser.Password)
+	assert.Equal(t, testUser.Email, retrievedUser.Email)
 }

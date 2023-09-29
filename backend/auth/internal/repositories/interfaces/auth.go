@@ -1,6 +1,9 @@
 package interfaces
 
+import "github.com/zhosyaaa/foodDeliverySystems-auth/internal/models"
+
 type AuthRepository interface {
-	RegisterUser(username string, password string) error
-	AuthenticateUser(username string, password string) (bool, error)
+	CreateUser(user models.User) (models.User, error)
+	GetUserById(id int) (models.User, error)
+	GetUserByEmail(email string) (models.User, error)
 }
